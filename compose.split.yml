@@ -1,0 +1,12 @@
+services:
+  infer:
+    image: ghcr.io/foxlight-foundation/foxmemory-infer:latest
+    ports:
+      - "8081:8081"
+
+  store:
+    image: ghcr.io/foxlight-foundation/foxmemory-store:latest
+    ports:
+      - "8082:8082"
+    environment:
+      - FOXMEMORY_INFER_URL=http://infer:8081

@@ -1,0 +1,13 @@
+services:
+  infer:
+    image: ghcr.io/foxlight-foundation/foxmemory-infer:latest
+    container_name: foxmemory-infer
+    ports:
+      - "8081:8081"
+  store:
+    image: ghcr.io/foxlight-foundation/foxmemory-store:latest
+    container_name: foxmemory-store
+    ports:
+      - "8082:8082"
+    depends_on:
+      - infer

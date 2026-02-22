@@ -1,0 +1,10 @@
+---
+description: Rules for Cursor in foxmemory-deploy
+globs:
+  - "*.yml"
+  - "docs/**/*.md"
+alwaysApply: true
+---
+- Keep deployment instructions reproducible and explicit.
+- Keep compose.one.yml and compose.split.yml coherent.
+- Never introduce plaintext secrets.
