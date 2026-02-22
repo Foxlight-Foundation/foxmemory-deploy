@@ -32,3 +32,7 @@ curl -s http://localhost:8082/health
 ## Notes
 - Current images default to GHCR references.
 - Can be switched to Docker Hub tags once registry workflow is updated.
+## Automation note
+Agent tooling should read `AGENTS.md` first.
+If your tool supports custom instruction files, point it to `AGENTS.md` as the canonical source.
+

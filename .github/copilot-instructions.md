@@ -1,6 +1,8 @@
-# GitHub Copilot Instructions
+# Copilot Instructions
 
-This repo packages deployment topology.
-- Favor explicit compose config over magic.
-- Keep commands copy/paste safe.
-- Update docs whenever compose behavior changes.
+Canonical project rules are in `AGENTS.md`.
+
+When proposing code:
+- follow `AGENTS.md` constraints
+- preserve contract stability
+- update tests/docs with behavior changes

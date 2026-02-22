@@ -1,5 +1,7 @@
 # CODEX.md
 
-- Preserve reproducible deployment commands.
-- Keep one-node and split compose files in sync with docs.
-- Avoid hidden assumptions about host paths/secrets.
+Primary instructions live in `AGENTS.md`.
+
+Before making changes:
+1. Read `AGENTS.md`
+2. Follow its rules and PR checklist

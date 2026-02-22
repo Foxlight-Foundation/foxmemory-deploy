@@ -1,5 +1,7 @@
 # CLAUDE.md
 
-- Read `AGENTS.md` first.
-- Validate compose syntax before committing.
-- Keep docs aligned with actual files/commands.
+Primary instructions live in `AGENTS.md`.
+
+Before making changes:
+1. Read `AGENTS.md`
+2. Follow its rules and PR checklist
