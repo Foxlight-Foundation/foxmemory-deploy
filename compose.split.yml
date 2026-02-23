@@ -1,12 +1,38 @@
 services:
+  # Deploy on host A (e.g., Mini)
   infer:
-    image: ghcr.io/foxlight-foundation/foxmemory-infer:latest
+    image: ${FOXMEMORY_INFER_IMAGE}
     ports:
       - "8081:8081"
+    environment:
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - OLLAMA_EMBED_MODEL=${OLLAMA_EMBED_MODEL}
+
+  # Deploy on host B (e.g., R720)
+  qdrant:
+    image: qdrant/qdrant:v1.13.2
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
 
   store:
-    image: ghcr.io/foxlight-foundation/foxmemory-store:latest
+    image: ${FOXMEMORY_STORE_IMAGE}
     ports:
       - "8082:8082"
     environment:
-      - FOXMEMORY_INFER_URL=http://infer:8081
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MEM0_LLM_MODEL=${MEM0_LLM_MODEL}
+      - MEM0_EMBED_MODEL=${MEM0_EMBED_MODEL}
+      - QDRANT_HOST=${QDRANT_HOST:-qdrant}
+      - QDRANT_PORT=${QDRANT_PORT:-6333}
+      - QDRANT_COLLECTION=${QDRANT_COLLECTION}
+      - MEM0_HISTORY_DB_PATH=/data/history.db
+    volumes:
+      - foxmemory_store_data:/data
+    depends_on:
+      - qdrant
+
+volumes:
+  qdrant_data:
+  foxmemory_store_data:
