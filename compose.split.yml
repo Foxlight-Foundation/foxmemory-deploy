@@ -1,5 +1,5 @@
+# Split mode: deploy these services on separate hosts if desired.
 services:
-  # Deploy on host A (e.g., Mini)
   infer:
     image: ${FOXMEMORY_INFER_IMAGE}
     ports:
@@ -7,29 +7,26 @@ services:
     environment:
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
       - OLLAMA_EMBED_MODEL=${OLLAMA_EMBED_MODEL}
-
-  # Deploy on host B (e.g., R720)
-  qdrant:
-    image: qdrant/qdrant:v1.13.2
-    ports:
-      - "6333:6333"
-    volumes:
-      - qdrant_data:/qdrant/storage
+      - OLLAMA_CHAT_MODEL=${OLLAMA_CHAT_MODEL}
+      - INFER_API_KEY=${INFER_API_KEY}
 
   store:
     image: ${FOXMEMORY_STORE_IMAGE}
     ports:
       - "8082:8082"
+      - "6333:6333"
     environment:
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - MEM0_LLM_MODEL=${MEM0_LLM_MODEL}
       - MEM0_EMBED_MODEL=${MEM0_EMBED_MODEL}
-      - QDRANT_HOST=${QDRANT_HOST:-qdrant}
-      - QDRANT_PORT=${QDRANT_PORT:-6333}
+      - QDRANT_HOST=127.0.0.1
+      - QDRANT_PORT=6333
       - QDRANT_COLLECTION=${QDRANT_COLLECTION}
       - MEM0_HISTORY_DB_PATH=/tmp/history.db
-    depends_on:
-      - qdrant
+      - QDRANT_STORAGE_PATH=/qdrant/storage
+    volumes:
+      - foxmemory_store_data:/qdrant/storage
 
 volumes:
-  qdrant_data:
+  foxmemory_store_data:

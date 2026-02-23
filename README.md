@@ -1,12 +1,13 @@
 # foxmemory-deploy
 
-Deployment pack for FoxMemory (Node/TS services + Mem0 OSS-compatible store).
+Deployment pack for FoxMemory.
 
 ## Modes
-1. `compose.one.yml` — one-node (infer + store with embedded qdrant)
-2. `compose.split.yml` — split topology for Mini/R720 style deployments
+1. `compose.one.yml` — one-node (infer + store-with-embedded-qdrant)
+2. `compose.split.yml` — split topology (infer and store on different infrastructure)
+3. `compose.external.yml` — store only; inference via external OpenAI-compatible API
 
-## Quick start
+## Quick start (one-node)
 ```bash
 cp .env.example .env
 docker compose -f compose.one.yml up -d
@@ -29,7 +30,7 @@ curl -s -X POST http://localhost:8082/v1/memories/search \
   -d '{"user_id":"demo","query":"movie preference","top_k":5}'
 ```
 
-## Notes
-- Uses Docker Hub images by default.
-- Configure OPENAI_API_KEY if using OpenAI LLM/embedder path.
-- In one-node mode, Qdrant is embedded in store and persisted via `foxmemory_store_data`.
+## Design contract
+- `foxmemory-store` requires no external container other than optional `foxmemory-infer`.
+- Inference integration uses OpenAI-compatible API shape.
+- Embedded Qdrant is included in store container for two-container deployments.
