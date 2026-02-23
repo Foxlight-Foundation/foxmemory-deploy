@@ -3,7 +3,7 @@
 Deployment pack for FoxMemory (Node/TS services + Mem0 OSS-compatible store).
 
 ## Modes
-1. `compose.one.yml` — one-node (qdrant + infer + store)
+1. `compose.one.yml` — one-node (infer + store with embedded qdrant)
 2. `compose.split.yml` — split topology for Mini/R720 style deployments
 
 ## Quick start
@@ -32,4 +32,4 @@ curl -s -X POST http://localhost:8082/v1/memories/search \
 ## Notes
 - Uses Docker Hub images by default.
 - Configure OPENAI_API_KEY if using OpenAI LLM/embedder path.
-- Qdrant persists in named Docker volume.
+- In one-node mode, Qdrant is embedded in store and persisted via `foxmemory_store_data`.

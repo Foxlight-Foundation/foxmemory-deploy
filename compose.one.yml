@@ -1,12 +1,4 @@
 services:
-  qdrant:
-    image: qdrant/qdrant:v1.13.2
-    container_name: foxmemory-qdrant
-    ports:
-      - "6333:6333"
-    volumes:
-      - qdrant_data:/qdrant/storage
-
   infer:
     image: ${FOXMEMORY_INFER_IMAGE}
     container_name: foxmemory-infer
@@ -21,17 +13,20 @@ services:
     container_name: foxmemory-store
     ports:
       - "8082:8082"
+      - "6333:6333"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - MEM0_LLM_MODEL=${MEM0_LLM_MODEL}
       - MEM0_EMBED_MODEL=${MEM0_EMBED_MODEL}
-      - QDRANT_HOST=qdrant
+      - QDRANT_HOST=127.0.0.1
       - QDRANT_PORT=6333
       - QDRANT_COLLECTION=${QDRANT_COLLECTION}
       - MEM0_HISTORY_DB_PATH=/tmp/history.db
+      - QDRANT_STORAGE_PATH=/qdrant/storage
+    volumes:
+      - foxmemory_store_data:/qdrant/storage
     depends_on:
-      - qdrant
       - infer
 
 volumes:
-  qdrant_data:
+  foxmemory_store_data:
