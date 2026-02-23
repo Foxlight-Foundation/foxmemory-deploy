@@ -28,13 +28,10 @@ services:
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
       - QDRANT_COLLECTION=${QDRANT_COLLECTION}
-      - MEM0_HISTORY_DB_PATH=/data/history.db
-    volumes:
-      - foxmemory_store_data:/data
+      - MEM0_HISTORY_DB_PATH=/tmp/history.db
     depends_on:
       - qdrant
       - infer
 
 volumes:
   qdrant_data:
-  foxmemory_store_data:
