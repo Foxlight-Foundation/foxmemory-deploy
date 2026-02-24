@@ -53,6 +53,7 @@ bash scripts/smoke-one.sh
 ```bash
 cp .env.example .env
 # set OPENAI_BASE_URL and OPENAI_API_KEY for your provider
+bash scripts/validate-env.sh
 bash scripts/smoke-external.sh
 ```
 
