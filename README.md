@@ -62,14 +62,28 @@ bash scripts/smoke-external.sh
 
 The `.env` file configures image tags, model names, and provider keys.
 
-Most important fields:
+### Required environment variables
 
-- `FOXMEMORY_INFER_IMAGE`
-- `FOXMEMORY_STORE_IMAGE`
-- `OPENAI_BASE_URL`
-- `OPENAI_API_KEY`
-- `MEM0_LLM_MODEL`
-- `MEM0_EMBED_MODEL`
+| Variable | Purpose | Consumed by | Example |
+|---|---|---|---|
+| `FOXMEMORY_INFER_IMAGE` | Infer container image tag | Docker Compose (`infer`) | `docker.io/foxlightfoundation/foxmemory-infer:latest` |
+| `FOXMEMORY_STORE_IMAGE` | Store container image tag | Docker Compose (`store`) | `docker.io/foxlightfoundation/foxmemory-store:latest` |
+| `OLLAMA_BASE_URL` | Local model runtime URL for infer | `infer` service | `http://host.docker.internal:11434` |
+| `OLLAMA_EMBED_MODEL` | Embedding model name for infer | `infer` service | `nomic-embed-text` |
+| `OLLAMA_CHAT_MODEL` | Chat model name for infer | `infer` service | `llama3.1:8b` |
+| `INFER_API_KEY` | API key accepted by infer and forwarded to store in one-node compose | `infer` service; one-node `store` auth wiring | `change-me` |
+| `OPENAI_BASE_URL` | OpenAI-compatible base URL for store calls | `store` service | `http://infer:8081/v1` |
+| `OPENAI_API_KEY` | Provider API key used by store | `store` service | `change-me` |
+| `MEM0_LLM_MODEL` | LLM model used for memory reasoning | `store` service | `gpt-4.1-nano` |
+| `MEM0_EMBED_MODEL` | Embedding model used by store | `store` service | `text-embedding-3-small` |
+| `QDRANT_URL` | Canonical Qdrant endpoint URL | store runtime (where supported) | `http://qdrant:6333` |
+| `QDRANT_API_KEY` | Qdrant auth key (optional) | store runtime | `` |
+| `QDRANT_COLLECTION` | Collection name for memory vectors | `store` service | `foxmemory` |
+
+Backward-compatible variables still present in some scripts/builds:
+
+- `QDRANT_HOST`
+- `QDRANT_PORT`
 
 ---
 
