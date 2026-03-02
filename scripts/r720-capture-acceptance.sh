@@ -11,18 +11,20 @@ STAMP="$(date +%Y%m%d-%H%M%S)"
 RUN_DIR="$OUT_DIR/acceptance-$STAMP"
 mkdir -p "$RUN_DIR"
 
-BASE_URL="${BASE_URL:-http://localhost:8082}"
+BASE_URL="${BASE_URL:-${R720_BASE_URL:-http://localhost:8082}}"
 DO_RESTART="${DO_RESTART:-0}"
 
 {
   echo "timestamp=$(date '+%Y-%m-%dT%H:%M:%S%z')"
   echo "base_url=$BASE_URL"
+  echo "r720_base_url=${R720_BASE_URL:-}"
   echo "do_restart=$DO_RESTART"
 } > "$RUN_DIR/context.env"
 
 # Fast-fail noisy local retries when no stack is actually up.
 # Also apply a short cooldown to avoid heartbeat-thrashing with identical local failures.
-if [[ "$BASE_URL" =~ ^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$ ]]; then
+# Set ALLOW_LOCAL_BASE_URL=1 to bypass this guard for intentional local acceptance runs.
+if [[ "$BASE_URL" =~ ^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$ ]] && [[ "${ALLOW_LOCAL_BASE_URL:-0}" != "1" ]]; then
   COOLDOWN_SECONDS="${LOCAL_BLOCK_COOLDOWN_SECONDS:-900}"  # 15m
   LAST_BLOCK_FILE="$OUT_DIR/.last-local-blocked-epoch"
   NOW_EPOCH="$(date +%s)"
