@@ -103,3 +103,19 @@ Why: this removes ambiguity about “reachable endpoint” and turns closure of 
 - Recovery attempts should use bounded half-open probes at a fixed minimum interval (cooldown) until a successful probe closes the breaker.
 - The breaker state transition (`OPEN` -> `HALF_OPEN` -> `CLOSED`) must be reflected in artifacts/log output so operators can distinguish dependency outage from script failure.
 - Rationale: fail-fast circuit behavior reduces noisy retries and makes dependency recovery observable and trustable.
+
+## Burn-rate release gate contract
+
+- Remote acceptance and cutover must be blocked when reliability burn is in a high-burn state (fast-burn or sustained-burn) unless the change is a reliability fix.
+- Gate decision should be explicit in run artifacts (`gate_status=open|blocked`, `gate_reason`, `evaluated_at`).
+- If blocked, wrappers should emit `BLOCKED` and stop before mutation/cutover steps.
+
+Why: this keeps rollout pressure from consuming the remaining error budget during active instability.
+
+## Low-traffic burn-rate guard
+
+- If request volume is too low for stable burn-rate interpretation, wrappers should mark gate status as `insufficient_signal` instead of pretending confidence.
+- In `insufficient_signal`, default action is conservative: do not auto-cutover; require explicit operator override for mutation steps.
+- Artifact requirement: include sampled request/error counts and evaluation window in acceptance output.
+
+Why: low-volume windows can make burn-rate math look precise while being statistically fragile; explicit insufficient-signal handling protects trust decisions.
