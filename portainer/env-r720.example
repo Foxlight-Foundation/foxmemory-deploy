@@ -1,0 +1,9 @@
+# Required
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
+
+# Optional (safe defaults shown)
+FOXMEMORY_STORE_IMAGE=docker.io/foxlightfoundation/foxmemory-store:latest
+MEM0_LLM_MODEL=gpt-4.1-nano
+MEM0_EMBED_MODEL=text-embedding-3-small
+QDRANT_COLLECTION=foxmemory
