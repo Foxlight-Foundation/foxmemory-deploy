@@ -20,6 +20,35 @@ DO_RESTART="${DO_RESTART:-0}"
   echo "do_restart=$DO_RESTART"
 } > "$RUN_DIR/context.env"
 
+# Fast-fail noisy local retries when no stack is actually up.
+# Also apply a short cooldown to avoid heartbeat-thrashing with identical local failures.
+if [[ "$BASE_URL" =~ ^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$ ]]; then
+  COOLDOWN_SECONDS="${LOCAL_BLOCK_COOLDOWN_SECONDS:-900}"  # 15m
+  LAST_BLOCK_FILE="$OUT_DIR/.last-local-blocked-epoch"
+  NOW_EPOCH="$(date +%s)"
+
+  if [[ -f "$LAST_BLOCK_FILE" ]]; then
+    LAST_EPOCH="$(cat "$LAST_BLOCK_FILE" 2>/dev/null || echo 0)"
+    AGE="$(( NOW_EPOCH - LAST_EPOCH ))"
+    if [[ "$AGE" -lt "$COOLDOWN_SECONDS" ]]; then
+      echo "BLOCKED: local BASE_URL cooldown active (${AGE}s < ${COOLDOWN_SECONDS}s). Use live R720 BASE_URL with DO_RESTART=0." | tee "$RUN_DIR/output.log"
+      RC=2
+      echo "$RC" > "$RUN_DIR/exit_code.txt"
+      echo "FAIL($RC): acceptance evidence captured at $RUN_DIR"
+      exit "$RC"
+    fi
+  fi
+
+  if ! curl -fsS -m 2 "$BASE_URL/health" >/dev/null 2>&1; then
+    echo "$NOW_EPOCH" > "$LAST_BLOCK_FILE"
+    echo "BLOCKED: local BASE_URL unreachable ($BASE_URL). Use live R720 BASE_URL with DO_RESTART=0." | tee "$RUN_DIR/output.log"
+    RC=2
+    echo "$RC" > "$RUN_DIR/exit_code.txt"
+    echo "FAIL($RC): acceptance evidence captured at $RUN_DIR"
+    exit "$RC"
+  fi
+fi
+
 set +e
 BASE_URL="$BASE_URL" DO_RESTART="$DO_RESTART" bash scripts/r720-acceptance.sh >"$RUN_DIR/output.log" 2>&1
 RC=$?
