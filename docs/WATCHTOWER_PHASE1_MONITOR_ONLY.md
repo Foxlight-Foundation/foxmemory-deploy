@@ -56,3 +56,8 @@ Containers without label remain out of scope in phase 1.
 
 - Watchtower docs: https://containrrr.dev/watchtower/container-selection/
 - Watchtower args: https://containrrr.dev/watchtower/arguments/
+
+## Label immutability caveat (important)
+
+In this environment, container labels are effectively deployment-time state for this workflow.
+Do **not** rely on `docker update --label-add` to retroactively fix watch scope; set `com.centurylinklabs.watchtower.enable=true` in compose/service definitions and recreate containers, then verify non-zero `Scanned` in watchtower logs.
