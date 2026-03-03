@@ -12,6 +12,7 @@ Goal: observe available image updates without mutating running services.
 
 - Run Watchtower with `--monitor-only`.
 - Use `--label-enable` so only explicitly labeled containers are in scope.
+- Keep `WATCHTOWER_LABEL_TAKE_PRECEDENCE` unset/false in phase 1 so global monitor-only cannot be accidentally bypassed by per-container labels.
 - Suppress startup-notification noise in phase 1 (`--no-startup-message`) so alert channels reflect meaningful change.
 - Start with labels on non-critical services first; do **not** auto-update store/vector services yet.
 
@@ -27,7 +28,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     command:
       - --interval
-      - "300"
+      - "300" # faster visibility loop for validation windows (default is 86400s / 24h)
       - --monitor-only
       - --label-enable
       - --no-startup-message
