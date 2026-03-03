@@ -12,6 +12,7 @@ Goal: observe available image updates without mutating running services.
 
 - Run Watchtower with `--monitor-only`.
 - Use `--label-enable` so only explicitly labeled containers are in scope.
+- Suppress startup-notification noise in phase 1 (`--no-startup-message`) so alert channels reflect meaningful change.
 - Start with labels on non-critical services first; do **not** auto-update store/vector services yet.
 
 ## Compose example (phase 1)
@@ -29,6 +30,7 @@ services:
       - "300"
       - --monitor-only
       - --label-enable
+      - --no-startup-message
       - --cleanup
 ```
 
