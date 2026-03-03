@@ -12,6 +12,8 @@ services:
 
   store:
     image: ${FOXMEMORY_STORE_IMAGE}
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "8082:8082"
       - "6333:6333"

@@ -5,6 +5,8 @@ services:
     image: qdrant/qdrant:latest
     container_name: foxmemory-qdrant
     restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "6333:6333"
     volumes:
@@ -14,6 +16,8 @@ services:
     image: ${FOXMEMORY_STORE_IMAGE:-docker.io/foxlightfoundation/foxmemory-store:latest}
     container_name: foxmemory-store
     restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
     command: ["sh", "-lc", "cd /tmp && node /app/dist/index.js"]
     ports:
       - "8082:8082"
