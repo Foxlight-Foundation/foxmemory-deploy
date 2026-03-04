@@ -50,7 +50,12 @@ Containers without label remain out of scope in phase 1.
 
 - At least 24h of clean monitor-only operation.
 - No unexplained restarts in critical stack.
+- Coverage proof is non-zero: at least one completed scan cycle with `Scanned > 0` for intended labeled scope (not just startup logs).
 - Explicit go/no-go decision recorded in deployment notes.
+
+## Scan-timing caveat (important)
+
+Watchtower periodic mode can appear healthy before the first full scan completes. Startup logs alone are not evidence of scope coverage. Always capture at least one post-interval session summary (`Failed/Scanned/Updated`) and treat `Scanned=0` as a configuration/scope blind spot that must be fixed before promotion.
 
 ## Source
 
