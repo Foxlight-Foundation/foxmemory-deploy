@@ -2,9 +2,60 @@ name: ci
 on:
   push:
   pull_request:
+
 jobs:
-  lint:
+  smoke-memory:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      MEM0_LLM_MODEL: ${{ secrets.MEM0_LLM_MODEL }}
+      MEM0_EMBED_MODEL: ${{ secrets.MEM0_EMBED_MODEL }}
+      QDRANT_COLLECTION: foxmemory
     steps:
       - uses: actions/checkout@v4
-      - run: echo "add lint/test pipeline"
+
+      - name: Prepare .env for CI smoke
+        run: |
+          cat > .env <<EOF
+          OPENAI_BASE_URL=${OPENAI_BASE_URL}
+          OPENAI_API_KEY=${OPENAI_API_KEY}
+          MEM0_LLM_MODEL=${MEM0_LLM_MODEL}
+          MEM0_EMBED_MODEL=${MEM0_EMBED_MODEL}
+          QDRANT_COLLECTION=${QDRANT_COLLECTION}
+          QDRANT_URL=http://qdrant:6333
+          EOF
+
+      - name: Validate required CI secrets
+        run: |
+          missing=0
+          for v in OPENAI_BASE_URL OPENAI_API_KEY MEM0_LLM_MODEL MEM0_EMBED_MODEL; do
+            if [ -z "${!v}" ]; then
+              echo "Missing required secret/env: $v" >&2
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "CI smoke blocked: set required repository secrets." >&2
+            exit 1
+          fi
+
+      - name: Run smoke suite
+        run: bash scripts/smoke-memory.sh
+
+      - name: Capture compose diagnostics on failure
+        if: failure()
+        run: |
+          docker compose -f compose.external.yml ps > compose-ps.txt || true
+          docker compose -f compose.external.yml logs --no-color > compose-logs.txt || true
+
+      - name: Upload diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: foxmemory-deploy-smoke-logs
+          path: |
+            compose-ps.txt
+            compose-logs.txt
+          if-no-files-found: warn

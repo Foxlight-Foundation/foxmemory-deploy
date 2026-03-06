@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm docs/R720_CUTOVER_PLAN.md docs/R720_DEPLOY_RUNBOOK.md docs/R720_POST_G4_VALIDATION.md scripts/r720-deploy.sh scripts/r720-preflight.sh)",
+      "Bash(git rm scripts/r720-debug-collect.sh scripts/smoke-external.sh)",
+      "Bash(ls scripts/r720*)",
+      "Bash(git rm scripts/r720-debug-collect.sh scripts/r720-acceptance.sh scripts/r720-capture-acceptance.sh scripts/r720-watchtower-phase1.sh scripts/smoke-external.sh docs/R720_DEPLOYMENT_CONTRACT.md)",
+      "Bash(git rm -f scripts/r720-debug-collect.sh scripts/r720-acceptance.sh scripts/r720-capture-acceptance.sh scripts/r720-watchtower-phase1.sh scripts/smoke-external.sh docs/R720_DEPLOYMENT_CONTRACT.md)"
+    ]
+  }
+}

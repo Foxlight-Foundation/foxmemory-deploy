@@ -18,6 +18,22 @@ If you’re new to infra: this repo is the "how to run it" layer. It does not co
 
 ---
 
+## Quick start (10-minute external path)
+
+Use this path when you already have an OpenAI-compatible provider and want a quick smoke pass.
+
+```bash
+cp .env.example .env
+# set OPENAI_BASE_URL and OPENAI_API_KEY in .env
+bash scripts/smoke-memory.sh
+```
+
+Expected success line:
+
+```bash
+smoke-memory: PASS
+```
+
 ## Quick start (one-node)
 
 ```bash
@@ -88,6 +104,52 @@ Backward-compatible variables still present in some scripts/builds:
 
 ---
 
+## Troubleshooting (Qdrant / auth / baseURL)
+
+### Qdrant connection refused (`ECONNREFUSED 127.0.0.1:6333`)
+
+Common cause: store container is trying to reach `localhost` instead of the Docker service name.
+
+Checks:
+
+```bash
+docker compose -f compose.external.yml ps
+curl -s http://localhost:6333/health
+```
+
+Fix:
+
+- In compose/runtime env, set `QDRANT_HOST=qdrant` and `QDRANT_PORT=6333` for container-to-container calls.
+- Keep `localhost:6333` only for host-side diagnostics.
+
+### Auth/baseURL mismatch (`ENOTFOUND infer`, provider auth failures)
+
+Common cause: `OPENAI_BASE_URL` points to a service that does not exist in the chosen topology.
+
+Checks:
+
+```bash
+grep -n "OPENAI_BASE_URL" .env
+```
+
+Expected:
+
+- `compose.one.yml`: `OPENAI_BASE_URL=http://infer:8081/v1`
+- `compose.external.yml`: `OPENAI_BASE_URL` must point to your external provider (for example `https://api.openai.com/v1`)
+
+### Quick verification commands (expected PASS path)
+
+```bash
+bash scripts/validate-env.sh
+bash scripts/smoke-memory.sh
+```
+
+Expected final line:
+
+```bash
+smoke-memory: PASS
+```
+
 ## Docs to read next
 
 - `docs/RUNBOOK.md` — step-by-step operations guide
@@ -95,3 +157,7 @@ Backward-compatible variables still present in some scripts/builds:
 ## License
 
 MIT (see `LICENSE` in service repos)
+
+### Client backpressure contract (429)
+
+If `foxmemory-store` (or an upstream dependency) responds with **HTTP 429 Too Many Requests**, clients should treat `Retry-After` as authoritative wait time before retrying. This keeps autonomous loops from amplifying overload during partial outages.
