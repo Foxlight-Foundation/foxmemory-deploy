@@ -5,8 +5,6 @@ services:
     image: qdrant/qdrant:latest
     container_name: foxmemory-qdrant
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     ports:
       - "6333:6333"
     volumes:
