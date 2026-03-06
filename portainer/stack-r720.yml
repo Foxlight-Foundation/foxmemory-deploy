@@ -12,6 +12,18 @@ services:
     volumes:
       - foxmemory_store_data:/qdrant/storage
 
+  neo4j:
+    image: neo4j:5-community
+    container_name: foxmemory-neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"   # HTTP browser UI
+      - "7687:7687"   # Bolt (used by foxmemory-store)
+    environment:
+      NEO4J_AUTH: ${NEO4J_AUTH:-neo4j/changeme}
+    volumes:
+      - foxmemory_neo4j_data:/data
+
   store:
     image: ${FOXMEMORY_STORE_IMAGE:-docker.io/foxlightfoundation/foxmemory-store:latest}
     container_name: foxmemory-store
@@ -31,8 +43,15 @@ services:
       QDRANT_COLLECTION: ${QDRANT_COLLECTION:-foxmemory}
       MEM0_HISTORY_DB_PATH: /tmp/history.db
       QDRANT_STORAGE_PATH: /qdrant/storage
+      # Graph memory — leave NEO4J_URL unset to disable
+      NEO4J_URL: ${NEO4J_URL:-}
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-}
+      MEM0_GRAPH_LLM_MODEL: ${MEM0_GRAPH_LLM_MODEL:-}
     depends_on:
       - qdrant
+      - neo4j
 
 volumes:
   foxmemory_store_data:
+  foxmemory_neo4j_data:
