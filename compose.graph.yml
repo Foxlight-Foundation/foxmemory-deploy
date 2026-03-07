@@ -40,12 +40,14 @@ services:
       QDRANT_PORT: "6333"
       QDRANT_COLLECTION: ${QDRANT_COLLECTION:-foxmemory}
       MEM0_HISTORY_DB_PATH: /tmp/history.db
-      QDRANT_STORAGE_PATH: /qdrant/storage
+      FOXMEMORY_ANALYTICS_DB_PATH: /data/foxmemory-analytics.db
       # Graph memory — leave NEO4J_URL unset to disable
       NEO4J_URL: ${NEO4J_URL:-}
       NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
       NEO4J_PASSWORD: ${NEO4J_PASSWORD:-}
       MEM0_GRAPH_LLM_MODEL: ${MEM0_GRAPH_LLM_MODEL:-gpt-4o-mini}
+    volumes:
+      - foxmemory_analytics_data:/data
     depends_on:
       - qdrant
       - neo4j
@@ -53,3 +55,4 @@ services:
 volumes:
   foxmemory_store_data:
   foxmemory_neo4j_data:
+  foxmemory_analytics_data:
