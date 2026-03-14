@@ -97,6 +97,22 @@ The `.env` file configures image tags, model names, and provider keys.
 | `QDRANT_API_KEY` | Qdrant auth key (optional) | store runtime | `` |
 | `QDRANT_COLLECTION` | Collection name for memory vectors | `store` service | `foxmemory` |
 
+### Per-purpose inference (optional)
+
+Each inference purpose can target a different endpoint. All fall back to `OPENAI_BASE_URL` / `OPENAI_API_KEY` when not set — existing deployments are unaffected.
+
+| Variable | Purpose | Fallback | Example |
+|---|---|---|---|
+| `MEM0_LLM_BASE_URL` | Main LLM endpoint | `OPENAI_BASE_URL` | `http://exo:8000/v1` |
+| `MEM0_LLM_API_KEY` | Main LLM API key | `OPENAI_API_KEY` | `not-needed` |
+| `MEM0_EMBED_BASE_URL` | Embedder endpoint | `OPENAI_BASE_URL` | `https://api.openai.com/v1` |
+| `MEM0_EMBED_API_KEY` | Embedder API key | `OPENAI_API_KEY` | `sk-...` |
+| `MEM0_GRAPH_LLM_BASE_URL` | Graph LLM endpoint | `OPENAI_BASE_URL` | `https://api.openai.com/v1` |
+| `MEM0_GRAPH_LLM_API_KEY` | Graph LLM API key | `OPENAI_API_KEY` | `sk-...` |
+| `MEM0_GRAPH_EXTRACTION_STRATEGY` | Graph extraction method | `tool_calling` | `json_prompting` |
+
+`MEM0_GRAPH_EXTRACTION_STRATEGY` controls how entities and relationships are extracted from text. Use `tool_calling` (default) for models that support OpenAI-style function calling. Use `json_prompting` for models that don't (e.g. small local models served via EXO).
+
 Backward-compatible variables still present in some scripts/builds:
 
 - `QDRANT_HOST`
